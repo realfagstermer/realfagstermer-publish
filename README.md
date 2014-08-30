@@ -31,7 +31,8 @@ Each subject is an instance of [skos:Concept](http://www.w3.org/2004/02/skos/cor
         dcterms:replaces <http://data.ub.uio.no/realfagstermer/000001>
 
 Merging, deprecation, ...
+
 * If concepts `<A>` and `<B>` are merged into concept `<C>`, we could 
-** use `<A> dcterms:isReplacedBy <C> ; <B> dcterms:isReplacedBy <C>, <C> dcterms:replaces <A>, <B>`, and somehow mark `<A>` and `<B>` as deprecated or deleted. Not aware o a "standard" way to do that, so we might need to create our own `ub: <http://data.ub.uio.no/vocab#>` with `ub:deleted`?
-** use MADS. Making `<A>` and `<B>` instances of [mads:DeprecatedAuthority](http://www.loc.gov/mads/rdf/v1#DeprecatedAuthority) and add `<A> mads:useInstead <C>, <B> mads:useInstead <C>`
+ * use dcterms. Adding `<A> dcterms:isReplacedBy <C> ; <B> dcterms:isReplacedBy <C>, <C> dcterms:replaces <A>, <B>`, and somehow mark `<A>` and `<B>` as deprecated or deleted. Not aware o a "standard" way to do that, so we might need to create our own `ub: <http://data.ub.uio.no/vocab#>` with `ub:deleted`?
+ * use MADS. Making `<A>` and `<B>` instances of [mads:DeprecatedAuthority](http://www.loc.gov/mads/rdf/v1#DeprecatedAuthority) and add `<A> mads:useInstead <C>, <B> mads:useInstead <C>`
 
