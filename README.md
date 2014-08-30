@@ -8,3 +8,29 @@ Run `make` to
 4. Serialize as RDF/XML, NT, Turtle
 5. Gzip?
 5. TODO: Send update to triple store
+
+Data model (work in progress)
+
+Each subject is an instance of `skos:Concept`, and also one of `mads:Topic`, `mads:Geographic`, `mads:Temporal`, `mads:GenreForm` or `mads:ComplexSubject`, indicating the type of subject.
+
+
+    @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+    @prefix xs: <http://www.w3.org/2001/XMLSchema#> .
+    @prefix mads: <http://www.loc.gov/mads/rdf/v1#> .
+    
+    <http://data.ub.uio.no/realfagstermer/008317> a skos:Concept, mads:Topic
+        skos:inScheme <http://data.ub.uio.no/realfagstermer/>
+        skos:prefLabel "IR-spektroskopi"@nb  <!-- Burde det ikke vært "IR-spektroskopi"? -->
+        skos:altLabel "Infrarød spektroskopi"@nb
+        skos:narrower <http://data.ub.uio.no/realfagstermer/017797>
+        skos:exactMatch <http://ntnu.no/ub/data/tekord#NTUB04964>,
+            <http://dewey.info/class/535.842/e23/>
+        dcterms:identifier "REAL008317"
+        dcterms:created "2014-01-01"^^xs:date
+        dcterms:modified "2014-08-30"^^xs:date
+        dcterms:replaces <http://data.ub.uio.no/realfagstermer/000001>
+
+
+* If concepts <A> and <B> are merged into concept <C>, this is represented by `<A> dcterms:isReplacedBy <C> ; <B> dcterms:isReplacedBy <C>, <C> dcterms:replaces <A>, <B>`. Also, <A> and <B> should be marked as deprecated or deleted. Not sure if there is a "standard" way to do that yet. Lage `ub: <http://data.ub.uio.no/vocab#>` ? med `ub:deleted`
+* 
+* 
