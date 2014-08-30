@@ -30,6 +30,8 @@ Each subject is an instance of [skos:Concept](http://www.w3.org/2004/02/skos/cor
         dcterms:modified "2014-08-30"^^xs:date
         dcterms:replaces <http://data.ub.uio.no/realfagstermer/000001>
 
-
-* If concepts `<A>` and `<B>` are merged into concept `<C>`, this is represented by `<A> dcterms:isReplacedBy <C> ; <B> dcterms:isReplacedBy <C>, <C> dcterms:replaces <A>, <B>`. Also, `<A>` and `<B>` should be marked as deprecated or deleted. Not sure if there is a "standard" way to do that yet. Create `ub: <http://data.ub.uio.no/vocab#>` with `ub:deleted`?
+Merging, deprecation, ...
+* If concepts `<A>` and `<B>` are merged into concept `<C>`, we could 
+** use `<A> dcterms:isReplacedBy <C> ; <B> dcterms:isReplacedBy <C>, <C> dcterms:replaces <A>, <B>`, and somehow mark `<A>` and `<B>` as deprecated or deleted. Not aware o a "standard" way to do that, so we might need to create our own `ub: <http://data.ub.uio.no/vocab#>` with `ub:deleted`?
+** use MADS. Making `<A>` and `<B>` instances of [mads:DeprecatedAuthority](http://www.loc.gov/mads/rdf/v1#DeprecatedAuthority) and add `<A> mads:useInstead <C>, <B> mads:useInstead <C>`
 
