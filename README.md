@@ -11,7 +11,7 @@ Run `make` to
 
 Data model (work in progress)
 
-Each subject is an instance of `skos:Concept`, and also one of `mads:Topic`, `mads:Geographic`, `mads:Temporal`, `mads:GenreForm` or `mads:ComplexSubject`, indicating the type of subject.
+Each subject is an instance of [skos:Concept](http://www.w3.org/2004/02/skos/core#Concept), and also one of [mads:Topic](http://www.loc.gov/mads/rdf/v1#Topic), [mads:Geographic](http://www.loc.gov/mads/rdf/v1#Geographic), [mads:Temporal](http://www.loc.gov/mads/rdf/v1#Temporal), [mads:GenreForm](http://www.loc.gov/mads/rdf/v1#GenreForm) or [mads:ComplexSubject](http://www.loc.gov/mads/rdf/v1#ComplexSubject), indicating the type of subject.
 
 
     @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
@@ -31,6 +31,5 @@ Each subject is an instance of `skos:Concept`, and also one of `mads:Topic`, `ma
         dcterms:replaces <http://data.ub.uio.no/realfagstermer/000001>
 
 
-* If concepts <A> and <B> are merged into concept <C>, this is represented by `<A> dcterms:isReplacedBy <C> ; <B> dcterms:isReplacedBy <C>, <C> dcterms:replaces <A>, <B>`. Also, <A> and <B> should be marked as deprecated or deleted. Not sure if there is a "standard" way to do that yet. Lage `ub: <http://data.ub.uio.no/vocab#>` ? med `ub:deleted`
-* 
-* 
+* If concepts `<A>` and `<B>` are merged into concept `<C>`, this is represented by `<A> dcterms:isReplacedBy <C> ; <B> dcterms:isReplacedBy <C>, <C> dcterms:replaces <A>, <B>`. Also, `<A>` and `<B>` should be marked as deprecated or deleted. Not sure if there is a "standard" way to do that yet. Create `ub: <http://data.ub.uio.no/vocab#>` with `ub:deleted`?
+
