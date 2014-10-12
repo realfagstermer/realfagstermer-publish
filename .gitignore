@@ -1,1 +1,9 @@
 env
+roald.rdf
+mapper.rdf
+*.rdf
+*.nt
+*.ttl
+*.log
+*.pyc
+realfagstermer
