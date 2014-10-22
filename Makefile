@@ -3,7 +3,7 @@
 all: realfagstermer.ttl
 
 realfagstermer.ttl:
-	./src/prepare.sh
+	./src/publish.sh
 
 clean:
 	rm -f mumapper.rdf

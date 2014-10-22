@@ -47,7 +47,7 @@ if [ $xc != 0 ]; then
     exit 1
 fi
 
-python src/publisher.py
+python src/publish.py
 xc=$?
 if [ $xc != 0 ]; then
     echo Exiting
