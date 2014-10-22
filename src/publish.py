@@ -4,7 +4,7 @@ import pytz   # timezone in Python 3
 from dateutil.parser import parse
 import logging
 import logging.handlers
-import os.path
+import os
 import time
 import sys
 import requests
@@ -90,6 +90,19 @@ def make():
     CC = Namespace('http://creativecommons.org/ns#')
 
     ds = Dataset()
+
+    with open('roald.rdf.2', 'w') as outfile:
+        with open('roald.rdf', 'r') as infile:
+            for line in infile:
+                outfile.write(line.replace('data.ub.uio.nu', 'data.ub.uio.no'))
+
+    with open('mumapper.rdf.2', 'w') as outfile:
+        with open('mumapper.rdf', 'r') as infile:
+            for line in infile:
+                outfile.write(line.replace('data.ub.uio.nu', 'data.ub.uio.no'))
+
+    os.rename('roald.rdf.2', 'roald.rdf')
+    os.rename('mumapper.rdf.2', 'mumapper.rdf')
 
     logger.info('Adding roald.rdf to dataset')
     roald = ds.graph(URIRef('file:///roald'))  # named graph
