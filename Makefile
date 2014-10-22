@@ -1,3 +1,4 @@
+.PHONY: realfagstermer.ttl
 
 all: realfagstermer.ttl
 
