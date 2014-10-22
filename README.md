@@ -12,6 +12,8 @@ Setup: Copy `config.ini.dist` to `config.ini`, fill in the values, and set stric
 6. Update triple store (currently Virtuoso)
 7. TODO: Gzip and publish?
 
+(Since the files we fetch from Roald and µmapper are XML, the script will just fail if the files should, for some reason, be incomplete. This is advantageous.)
+
 To make it run hourly, we add a crontab:
 
     15 * * * * cd /data/realfagstermer-publish && make 2>&1 >> out.log
