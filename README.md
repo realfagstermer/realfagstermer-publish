@@ -1,9 +1,8 @@
 Publishing script for Realfagstermer RDF/SKOS.
 
-Setup: Copy `config.ini.dist` to `config.ini` and fill in the values.
-Set strict permissions like 0600.
+Setup: Copy `config.ini.dist` to `config.ini`, fill in the values, and set strict permissions like 0600.
 
-Run `make` to
+`make` does the following:
 
 1. Get RDF representation from Roald
 2. Get mappings from µmapper
@@ -12,6 +11,15 @@ Run `make` to
 5. Commit Turtle to git
 6. Update triple store (currently Virtuoso)
 7. TODO: Gzip and publish?
+
+To make it run hourly, we add a crontab:
+
+    15 * * * * cd /data/realfagstermer-publish && make 2>&1 >> out.log
+
+that runs some minutes after the hourly µmapper export:
+
+    08 * * * * cd /data/mapper && php artisan export:rdf
+
 
 Data model (work in progress)
 
