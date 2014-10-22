@@ -90,3 +90,6 @@ cd realfagstermer
 git add realfagstermer.ttl
 git commit -m "Updating"
 git push --mirror origin  # locally updated refs will be force updated on the remote end !
+
+python src/update_triple_store.py
+

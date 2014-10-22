@@ -1,0 +1,2 @@
+SPARQL CLEAR GRAPH <http://data.ub.uio.no/rt> ;
+DB.DBA.TTLP_MT (file_to_string_output ('/tmp/realfagstermer.ttl'), '', 'http://data.ub.uio.no/rt') ;

@@ -7,3 +7,4 @@ mapper.rdf
 *.log
 *.pyc
 realfagstermer
+config.ini

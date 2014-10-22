@@ -1,13 +1,17 @@
 Publishing script for Realfagstermer RDF/SKOS.
 
+Setup: Copy `config.ini.dist` to `config.ini` and fill in the values.
+Set strict permissions like 0600.
+
 Run `make` to
 
 1. Get RDF representation from Roald
 2. Get mappings from µmapper
 3. Combine and add metadata about the vocabulary itself (as a concept scheme)
 4. Serialize as RDF/XML, NT, Turtle
-5. Gzip?
-5. TODO: Send update to triple store
+5. Commit Turtle to git
+6. Update triple store (currently Virtuoso)
+7. TODO: Gzip and publish?
 
 Data model (work in progress)
 
