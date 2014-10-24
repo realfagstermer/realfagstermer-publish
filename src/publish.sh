@@ -4,6 +4,22 @@ if [ "$(basename "$(pwd)")" == "src" ]; then
     cd ..
 fi
 
+function install_deps
+{
+    echo Installing/updating dependencies
+    pip install -U rdflib pytz python-dateutil requests
+    xc=$?
+
+    if [ $xc != 0 ]; then
+        echo
+        echo -----------------------------------------------------------
+        echo ERROR:
+        echo Could not install dependencies using pip
+        echo -----------------------------------------------------------
+        exit 1
+    fi
+}
+
 if [ ! -f env/bin/activate ]; then
 
     echo
@@ -27,6 +43,8 @@ if [ ! -f env/bin/activate ]; then
     echo Activating virtualenv
     . env/bin/activate
 
+    $(install_deps)
+
 else
 
     echo Activating virtualenv
@@ -34,18 +52,6 @@ else
 
 fi
 
-echo Installing/updating dependencies
-pip install -U rdflib pytz python-dateutil requests
-xc=$?
-
-if [ $xc != 0 ]; then
-    echo
-    echo -----------------------------------------------------------
-    echo ERROR:
-    echo Could not install dependencies using pip
-    echo -----------------------------------------------------------
-    exit 1
-fi
 
 python src/publish.py
 xc=$?
