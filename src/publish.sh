@@ -97,5 +97,6 @@ git add realfagstermer.ttl
 git commit -m "Update realfagstermer.ttl"
 git push --mirror origin  # locally updated refs will be force updated on the remote end !
 
+cd ..
 python src/update_triple_store.py
 
