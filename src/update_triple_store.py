@@ -33,7 +33,7 @@ def run():
     with open('/tmp/realfagstermer.ttl', 'w') as outfile:
         with open('realfagstermer.ttl', 'r') as infile:
             for line in infile:
-                outfile.write(line.replace('data.ub.uio.no', 'data.ub.uio.nu'))
+                outfile.write(line)  # .replace('data.ub.uio.no', 'data.ub.uio.nu'))
 
     proc = subprocess.Popen(args)
     if proc.wait() != 0:
