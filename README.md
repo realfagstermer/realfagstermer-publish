@@ -50,3 +50,10 @@ Merging, deprecation, ...
  * use dcterms. Adding `<A> dcterms:isReplacedBy <C> ; <B> dcterms:isReplacedBy <C>, <C> dcterms:replaces <A>, <B>`, and somehow mark `<A>` and `<B>` as deprecated or deleted. Not aware o a "standard" way to do that, so we might need to create our own `ub: <http://data.ub.uio.no/vocab#>` with `ub:deleted`?
  * use MADS. Making `<A>` and `<B>` instances of [mads:DeprecatedAuthority](http://www.loc.gov/mads/rdf/v1#DeprecatedAuthority) and add `<A> mads:useInstead <C>, <B> mads:useInstead <C>`
 
+First-time setup:
+
+```
+virtualenv ENV
+. ENV/bin/activate
+pip install rdflib requests python-dateutil pytz
+```

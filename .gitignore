@@ -1,9 +1,10 @@
-env
+ENV
 roald.rdf
 mapper.rdf
 *.rdf
 *.nt
 *.ttl
+*.xml
 *.log
 *.pyc
 realfagstermer

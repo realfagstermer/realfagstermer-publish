@@ -208,8 +208,8 @@ def make():
     logger.info('Serializing...')
 
     s = OrderedXMLSerializer(out)
-    s.serialize(open('realfagstermer.rdf', 'w'), max_depth=1)
-    logger.info('Wrote realfagstermer.rdf')
+    s.serialize(open('realfagstermer.rdf.xml', 'w'), max_depth=1)
+    logger.info('Wrote realfagstermer.rdf.xml')
 
     out.serialize(open('realfagstermer.nt', 'w'), format='nt')
     logger.info('Wrote realfagstermer.nt')
