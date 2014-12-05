@@ -73,7 +73,7 @@ fi
 
 if [ ! -d realfagstermer ]; then
 
-    git clone git@github.com:realfagstermer/realfagstermer.git
+    git clone git@github-bot:realfagstermer/realfagstermer.git
     xc=$?
     if [ $xc != 0 ]; then
         echo
@@ -86,6 +86,8 @@ if [ ! -d realfagstermer ]; then
 fi
 
 cd realfagstermer
+git config user.name "ubo-bot"
+git config user.email "danmichaelo+ubobot@gmail.com"
 git checkout master
 git pull
 xc=$?
