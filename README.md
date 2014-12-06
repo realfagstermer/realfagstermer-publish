@@ -27,23 +27,23 @@ Data model (work in progress)
 
 Each subject is an instance of [skos:Concept](http://www.w3.org/2004/02/skos/core#Concept), and also one of [mads:Topic](http://www.loc.gov/mads/rdf/v1#Topic), [mads:Geographic](http://www.loc.gov/mads/rdf/v1#Geographic), [mads:Temporal](http://www.loc.gov/mads/rdf/v1#Temporal), [mads:GenreForm](http://www.loc.gov/mads/rdf/v1#GenreForm) or [mads:ComplexSubject](http://www.loc.gov/mads/rdf/v1#ComplexSubject), indicating the type of subject.
 
+```turtle
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xs: <http://www.w3.org/2001/XMLSchema#> .
+@prefix mads: <http://www.loc.gov/mads/rdf/v1#> .
 
-    @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-    @prefix xs: <http://www.w3.org/2001/XMLSchema#> .
-    @prefix mads: <http://www.loc.gov/mads/rdf/v1#> .
-    
-    <http://data.ub.uio.no/realfagstermer/008317> a skos:Concept, mads:Topic
-        skos:inScheme <http://data.ub.uio.no/realfagstermer/>
-        skos:prefLabel "IR-spektroskopi"@nb  <!-- Burde det ikke vært "IR-spektroskopi"? -->
-        skos:altLabel "Infrarød spektroskopi"@nb
-        skos:narrower <http://data.ub.uio.no/realfagstermer/017797>
-        skos:exactMatch <http://ntnu.no/ub/data/tekord#NTUB04964>,
-            <http://dewey.info/class/535.842/e23/>
-        dcterms:identifier "REAL008317"
-        dcterms:created "2014-01-01"^^xs:date
-        dcterms:modified "2014-08-30"^^xs:date
-        dcterms:replaces <http://data.ub.uio.no/realfagstermer/000001>
-
+<http://data.ub.uio.no/realfagstermer/008317> a skos:Concept, mads:Topic
+    skos:inScheme <http://data.ub.uio.no/realfagstermer/>
+    skos:prefLabel "IR-spektroskopi"@nb  <!-- Burde det ikke vært "IR-spektroskopi"? -->
+    skos:altLabel "Infrarød spektroskopi"@nb
+    skos:narrower <http://data.ub.uio.no/realfagstermer/017797>
+    skos:exactMatch <http://ntnu.no/ub/data/tekord#NTUB04964>,
+        <http://dewey.info/class/535.842/e23/>
+    dcterms:identifier "REAL008317"
+    dcterms:created "2014-01-01"^^xs:date
+    dcterms:modified "2014-08-30"^^xs:date
+    dcterms:replaces <http://data.ub.uio.no/realfagstermer/000001>
+```
 Merging, deprecation, ...
 
 * If concepts `<A>` and `<B>` are merged into concept `<C>`, we could 
