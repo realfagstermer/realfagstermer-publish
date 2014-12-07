@@ -1,4 +1,5 @@
 # encoding=utf8
+from __future__ import absolute_import
 import datetime
 import pytz   # timezone in Python 3
 from dateutil.parser import parse
@@ -7,13 +8,15 @@ import logging.handlers
 import os
 import time
 import sys
+import json
 import requests
 from rdflib.graph import Graph, ConjunctiveGraph, Dataset, Literal
-from rdflib.namespace import Namespace, URIRef, OWL, RDF, DC, DCTERMS, FOAF, XSD, SKOS
+from rdflib.namespace import Namespace, URIRef, OWL, RDF, DC, DCTERMS, FOAF, XSD, SKOS, RDFS
 from rdflib import BNode
-import datetime
-from serializer import OrderedXMLSerializer
 from rdflib.plugins.serializers.turtle import RecursiveSerializer, TurtleSerializer
+
+from .serializer import OrderedXMLSerializer
+from skosify import Skosify
 
 import logging
 
@@ -80,29 +83,9 @@ def check_modification_dates(record):
     return record
 
 
-def make():
-    """
-    Combine data from roald.rdf and mumapper.rdf, add some metadata and serialize
-    """
-
-    RDAC = Namespace('http://rdaregistry.info/Elements/c/')
-    MADS = Namespace('http://www.loc.gov/mads/rdf/v1#')
-    CC = Namespace('http://creativecommons.org/ns#')
+def load_inputfiles():
 
     ds = Dataset()
-
-    with open('roald.rdf.2', 'w') as outfile:
-        with open('roald.rdf', 'r') as infile:
-            for line in infile:
-                outfile.write(line.replace('data.ub.uio.nu', 'data.ub.uio.no'))
-
-    with open('mumapper.rdf.2', 'w') as outfile:
-        with open('mumapper.rdf', 'r') as infile:
-            for line in infile:
-                outfile.write(line.replace('data.ub.uio.nu', 'data.ub.uio.no'))
-
-    os.rename('roald.rdf.2', 'roald.rdf')
-    os.rename('mumapper.rdf.2', 'mumapper.rdf')
 
     logger.info('Adding roald.rdf to dataset')
     roald = ds.graph(URIRef('file:///roald'))  # named graph
@@ -112,54 +95,24 @@ def make():
     mumapper = ds.graph(URIRef('file:///mumapper'))  # named graph
     mumapper.load('mumapper.rdf')
 
+    return ds
+
+
+def process(ds):
+
+    RDAC = Namespace('http://rdaregistry.info/Elements/c/')
+    MADS = Namespace('http://www.loc.gov/mads/rdf/v1#')
+    CC = Namespace('http://creativecommons.org/ns#')
+
     out = Graph()
-    out.namespace_manager.bind('owl', OWL)
-    out.namespace_manager.bind('skos', SKOS)
-    out.namespace_manager.bind('dcterms', DCTERMS)
-    out.namespace_manager.bind('foaf', FOAF)
-    out.namespace_manager.bind('cc', CC)
-    out.namespace_manager.bind('xsd', XSD)
-    out.namespace_manager.bind('mads', MADS)
-
-    vocabulary = URIRef('http://data.ub.uio.no/realfagstermer/')
-    out.add((vocabulary, RDF.type, SKOS.ConceptScheme))
-
-    # Add title, description and datestamp
-
-    # http://dublincore.org/documents/dcmi-terms/#terms-title
-    out.add((vocabulary, DCTERMS.title, Literal('Realfagstermer', lang='nb')))
-
-    # http://dublincore.org/documents/dcmi-terms/#terms-description
-    out.add((vocabulary, DCTERMS.description, Literal('Realfagstermer er et kontrollert, pre-koordinert emneordsvokabular som i hovedsak dekker naturvitenskap, matematikk og informatikk.', lang='nb')))
-    out.add((vocabulary, DCTERMS.description, Literal('Realfagstermer is a controlled, pre-coordinated subject headings vocabulary covering mainly the natural sciences, mathematics and informatics.', lang='en')))
-
-    # http://dublincore.org/documents/dcmi-terms/#terms-type
-    out.add((vocabulary, DCTERMS.type, URIRef('http://purl.org/dc/dcmitype/Dataset')))
-
-    # http://wiki.dublincore.org/index.php/NKOS_AP_Elements
-    out.add((vocabulary, DCTERMS.type, URIRef('http://purl.org/nkos/nkostype/subject_heading_scheme')))
-    now = datetime.datetime.now()
-    out.add((vocabulary, DCTERMS.modified, Literal(now.strftime('%F'), datatype=XSD.date)))
-
-    # Add creator
-    UBO = BNode()
-    out.add((UBO, OWL.sameAs, URIRef('http://viaf.org/viaf/155670338/')))
-    out.add((UBO, OWL.sameAs, URIRef('http://www.wikidata.org/entity/Q3354774')))
-    out.add((UBO, OWL.sameAs, URIRef('http://dbpedia.org/resource/University_Library_of_Oslo')))
-    # x90065017
-    out.add((UBO, RDF.type, FOAF.Organization))
-
-    # out.add((UBO, RDF.type, RDAC.C10005)) # Corporate body
-    # http://metadataregistry.org/uri/orgtype/n60  # ISIL organization type
-    out.add((UBO, DCTERMS.title, Literal('Universitetsbiblioteket i Oslo', lang='nb')))
-    out.add((UBO, DCTERMS.title, Literal('University Library of Oslo', lang='en')))
-
-    # http://dublincore.org/documents/dcmi-terms/#terms-creator
-    out.add((vocabulary, DCTERMS.creator, UBO))
-
-    # Add license
-    out.add((vocabulary, DCTERMS.license, URIRef('http://creativecommons.org/publicdomain/zero/1.0/')))
-    out.add((vocabulary, CC.license, URIRef('http://creativecommons.org/publicdomain/zero/1.0/')))
+    out.parse('vocabulary.ttl', format='turtle')
+    # out.namespace_manager.bind('owl', OWL)
+    # out.namespace_manager.bind('skos', SKOS)
+    # out.namespace_manager.bind('dcterms', DCTERMS)
+    # out.namespace_manager.bind('foaf', FOAF)
+    # out.namespace_manager.bind('cc', CC)
+    # out.namespace_manager.bind('xsd', XSD)
+    # out.namespace_manager.bind('mads', MADS)
 
     res = ds.query("""
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -185,6 +138,96 @@ def make():
     # Add existing triples
     for q in res:
         out.add(q)
+
+    return out
+
+
+def skosify_process(voc):
+
+    logging.info("Performing inferences")
+
+    skosify = Skosify()
+
+    skosify.infer_classes(voc)
+    skosify.infer_properties(voc)
+
+    logging.info("Performing inferences")
+
+    skosify.infer_classes(voc)
+    skosify.infer_properties(voc)
+
+    # logging.info("Setting up namespaces")
+    # skosify.setup_namespaces(voc, namespaces)
+
+    # logging.info("Phase 4: Transforming concepts, literals and relations")
+
+    # special transforms for labels: whitespace, prefLabel vs altLabel
+    # skosify.transform_labels(voc, options.default_language)
+
+    # special transforms for collections + aggregate and deprecated concepts
+    # skosify.transform_collections(voc)
+
+    # find/create concept scheme
+    cs = skosify.get_concept_scheme(voc)
+    # if not cs:
+    #     cs = create_concept_scheme(voc, options.namespace)
+    skosify.initialize_concept_scheme(voc, cs,
+                                      label=False,
+                                      language='nb',
+                                      set_modified=True)
+
+    # skosify.transform_aggregate_concepts(voc, cs, relationmap, options.aggregates)
+    # skosify.transform_deprecated_concepts(voc, cs)
+
+    # logging.info("Phase 5: Performing SKOS enrichments")
+
+    # Enrichments: broader <-> narrower, related <-> related
+    # skosify.enrich_relations(voc, options.enrich_mappings,
+    #                  options.narrower, options.transitive)
+
+    # logging.info("Phase 6: Cleaning up")
+
+    # Clean up unused/unnecessary class/property definitions and unreachable
+    # triples
+    # if options.cleanup_properties:
+    #     skosify.cleanup_properties(voc)
+    # if options.cleanup_classes:
+    #     skosify.cleanup_classes(voc)
+    # if options.cleanup_unreachable:
+    #     skosify.cleanup_unreachable(voc)
+
+    # logging.info("Phase 7: Setting up concept schemes and top concepts")
+
+    # setup inScheme and hasTopConcept
+    # skosify.setup_concept_scheme(voc, cs)
+    # skosify.setup_top_concepts(voc, options.mark_top_concepts)
+
+    logging.info("Phase 8: Checking concept hierarchy")
+
+    # check hierarchy for cycles
+    skosify.check_hierarchy(voc, break_cycles=True, keep_related=False,
+                            mark_top_concepts=False, eliminate_redundancy=True)
+
+    # logging.info("Phase 9: Checking labels")
+
+    # check for duplicate labels
+    # skosify.check_labels(voc, options.preflabel_policy)
+
+
+def make():
+    """
+    Combine data from roald.rdf and mumapper.rdf, add some metadata,
+    do some skosify checks and serialize.
+    """
+
+    starttime = time.time()
+
+    ds = load_inputfiles()
+    inputtime = time.time()
+
+    out = process(ds)
+    skosify_process(out)
+    processtime = time.time()
 
     # Add skos:inScheme to all concepts
     # for q in roald.triples((None, RDF.type, SKOS.Concept)):
@@ -218,6 +261,17 @@ def make():
     s.topClasses = [SKOS.ConceptScheme, SKOS.Concept]  # These will appear first in the file
     s.serialize(open('realfagstermer.ttl', 'w'))
     logger.info('Wrote realfagstermer.ttl')
+
+
+    endtime = time.time()
+
+    logging.info("Reading input files took  %d seconds",
+                 (inputtime - starttime))
+    logging.info("Processing took          %d seconds",
+                 (processtime - inputtime))
+    logging.info("Writing output file took %d seconds",
+                 (endtime - processtime))
+    logging.info("Total time taken:        %d seconds", (endtime - starttime))
 
 
 def run():

@@ -1,0 +1,31 @@
+@prefix cc: <http://creativecommons.org/ns#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix mads: <http://www.loc.gov/mads/rdf/v1#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://data.ub.uio.no/realfagstermer/> a skos:ConceptScheme ;
+    rdfs:label "Realfagstermer"@nb ;
+    cc:license <http://creativecommons.org/publicdomain/zero/1.0/> ;
+    dcterms:creator [ a foaf:Organization ;
+            rdfs:label "University Library of Oslo"@en,
+                "Universitetsbiblioteket i Oslo"@nb ;
+            owl:sameAs <http://dbpedia.org/resource/University_Library_of_Oslo>,
+                <http://viaf.org/viaf/155670338/>,
+                <http://www.wikidata.org/entity/Q3354774> ] ;
+    dcterms:description "Realfagstermer is a controlled, pre-coordinated subject headings vocabulary covering mainly the natural sciences, mathematics and informatics."@en,
+        "Realfagstermer er et kontrollert, pre-koordinert emneordsvokabular som i hovedsak dekker naturvitenskap, matematikk og informatikk."@nb ;
+    dcterms:language <http://lexvo.org/id/iso639-3/eng>,
+        <http://lexvo.org/id/iso639-3/lat>,
+        <http://lexvo.org/id/iso639-3/nno>,
+        <http://lexvo.org/id/iso639-3/nob> ;
+    dcterms:license <http://creativecommons.org/publicdomain/zero/1.0/> ;
+    dcterms:modified "2014-12-07"^^xsd:date ;
+    dcterms:title "Realfagstermer"@nb ;
+    dcterms:type <http://purl.org/dc/dcmitype/Dataset>,
+        <http://purl.org/nkos/nkostype/subject_heading_scheme> .

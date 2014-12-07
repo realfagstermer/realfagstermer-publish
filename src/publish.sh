@@ -12,6 +12,7 @@ function install_deps
 {
     echo Installing/updating dependencies
     pip install -U rdflib pytz python-dateutil requests
+    pip install git+git://github.com/danmichaelo/skosify.git
     xc=$?
 
     if [ $xc != 0 ]; then
@@ -47,7 +48,7 @@ if [ ! -f ENV/bin/activate ]; then
     echo Activating virtualenv
     . ENV/bin/activate
 
-    $(install_deps)
+    install_deps
 
 else
 
@@ -60,7 +61,7 @@ fi
 # Produce RDF
 #==========================================================
 
-python src/publish.py
+python -m src.publish
 xc=$?
 if [ $xc != 0 ]; then
     echo Exiting
@@ -103,9 +104,8 @@ if [ $xc != 0 ]; then
 
 fi
 
-cd ..
-cp realfagstermer.ttl realfagstermer/
-cd realfagstermer
+cp ../realfagstermer.ttl ./
+
 git add realfagstermer.ttl
 git commit -m "Update realfagstermer.ttl"
 git push --mirror origin  # locally updated refs will be force updated on the remote end !
