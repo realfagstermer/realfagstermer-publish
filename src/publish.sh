@@ -112,6 +112,14 @@ git push --mirror origin  # locally updated refs will be force updated on the re
 
 cd ..
 
+
+#==========================================================
+# Update triple store 
+#==========================================================
+
+python src/update_triple_store.py
+
+
 #==========================================================
 # Publish compressed dumps
 #==========================================================
@@ -139,8 +147,42 @@ cp $BASENAME.ttl.zip $DUMPS_DIR/
 rm *.bz2 *.zip
 
 #==========================================================
-# Update triple store 
+# Publish stats
 #==========================================================
 
-python src/update_triple_store.py
 
+if [ ! -d realfagstermer.github.io ]; then
+
+    git clone git@github.com:realfagstermer/realfagstermer.github.io.git
+    xc=$?
+    if [ $xc != 0 ]; then
+        echo
+        echo -----------------------------------------------------------
+        echo ERROR:
+        echo Could not clone realfagstermer.github.io git repo
+        echo -----------------------------------------------------------
+        exit 1
+    fi
+fi
+
+cd realfagstermer.github.io
+git checkout master
+git pull
+xc=$?
+
+if [ $xc != 0 ]; then
+
+    echo
+    echo -----------------------------------------------------------
+    echo ERROR:
+    echo Could not git pull. Conflict?
+    echo -----------------------------------------------------------
+    exit 1
+
+fi
+
+cp ../stats_current.json _data/
+cp ../stats.json _data/
+git add data/stats_current.json
+git commit -m "Update stats"
+git push --mirror origin  # locally updated refs will be force updated on the remote end !

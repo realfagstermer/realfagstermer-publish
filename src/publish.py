@@ -35,6 +35,139 @@ warn_handler.setFormatter(formatter)
 logger.addHandler(warn_handler)
 
 
+def stats(g):
+
+    facets = {
+        'Topic': {
+            'concepts': 0,
+            'terms': 0,
+            'prefLabels': {'nb': 0, 'nn': 0, 'en': 0, 'la': 0},
+            'altLabels': {'nb': 0, 'nn': 0, 'en': 0, 'la': 0}
+        },
+        'Temporal': {
+            'concepts': 0,
+            'terms': 0,
+            'prefLabels': {'nb': 0, 'nn': 0, 'en': 0, 'la': 0},
+            'altLabels': {'nb': 0, 'nn': 0, 'en': 0, 'la': 0}
+        },
+        'Geographic': {
+            'concepts': 0,
+            'terms': 0,
+            'prefLabels': {'nb': 0, 'nn': 0, 'en': 0, 'la': 0},
+            'altLabels': {'nb': 0, 'nn': 0, 'en': 0, 'la': 0}
+        },
+        'GenreForm': {
+            'concepts': 0,
+            'terms': 0,
+            'prefLabels': {'nb': 0, 'nn': 0, 'en': 0, 'la': 0},
+            'altLabels': {'nb': 0, 'nn': 0, 'en': 0, 'la': 0}
+        },
+        'ComplexSubject': {
+            'concepts': 0,
+            'terms': 0,
+            'prefLabels': {}
+        }
+    }
+
+    features = {
+        'definition': 0,
+        'editorialNote': 0,
+        'related': 0,
+        'exactMatch': 0,
+        'closeMatch': 0,
+        'relatedMatch': 0,
+        'broadMatch': 0,
+        'narrowMatch': 0,
+    }
+
+    mappingUris = {
+        'agrovoc': 'http://aims.fao.org/aos/agrovoc/',
+        'ddc': 'http://dewey.info/',
+        'tekord': 'http://ntnu.no/ub/data/tekord'
+    }
+
+    mappings = {
+        'agrovoc': 0,
+        'ddc': 0,
+        'tekord': 0
+    }
+
+    for x in g.triples_choices((None, [SKOS.exactMatch, SKOS.closeMatch, SKOS.relatedMatch, SKOS.broadMatch, SKOS.narrowMatch], None)):
+        if type(x[2]) == URIRef:
+            uri = str(x[2])
+            for k, v in mappingUris.items():
+                if uri.startswith(v):
+                    mappings[k] += 1
+
+    for featureName in features.keys():
+
+        features[featureName] = int(g.query(u"""PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+        PREFIX mads: <http://www.loc.gov/mads/rdf/v1#>
+        SELECT (COUNT(DISTINCT ?o) AS ?c)
+        WHERE {
+          ?s skos:%s ?o
+        }""" % featureName).bindings[0].values()[0].value)
+
+    terms = {}
+    for triple in g.triples_choices((None, [SKOS.prefLabel, SKOS.altLabel], None)):
+        lang = triple[2].language
+        if lang not in terms:
+            terms[lang] = 0
+        terms[lang] += 1
+
+    terms['_sum'] = sum([v for x, v in terms.items()])
+
+    sumConcepts = 0
+    sumConceptsWithStrings = 0
+
+    for facetName, facet in facets.items():
+
+        facets[facetName]['concepts'] = int(g.query(u"""PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+        PREFIX mads: <http://www.loc.gov/mads/rdf/v1#>
+        SELECT (COUNT(DISTINCT ?s) AS ?c)
+        WHERE {
+          ?s a mads:%s .
+        }""" % (facetName)).bindings[0].values()[0].value)
+
+        sumConceptsWithStrings += facets[facetName]['concepts']
+
+        if facetName is not 'ComplexSubject':
+            sumConcepts += facets[facetName]['concepts']
+
+        facets[facetName]['terms'] = 0
+
+        for langName in facet['prefLabels'].keys():
+
+            facets[facetName]['prefLabels'][langName] = int(g.query(u"""PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+            PREFIX mads: <http://www.loc.gov/mads/rdf/v1#>
+            SELECT (COUNT(DISTINCT ?o) AS ?c)
+            WHERE {
+              ?s a mads:%s .
+              ?s skos:prefLabel ?o .
+              FILTER(langMatches(lang(?o), "%s"))
+            }""" % (facetName, langName)).bindings[0].values()[0].value)
+
+            facets[facetName]['altLabels'][langName] = int(g.query(u"""PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+            PREFIX mads: <http://www.loc.gov/mads/rdf/v1#>
+            SELECT (COUNT(DISTINCT ?o) AS ?c)
+            WHERE {
+              ?s a mads:%s .
+              ?s skos:altLabel ?o .
+              FILTER(langMatches(lang(?o), "%s"))
+            }""" % (facetName, langName)).bindings[0].values()[0].value)
+
+            facets[facetName]['terms'] += facets[facetName]['prefLabels'][langName] + facets[facetName]['altLabels'][langName]
+
+    return {
+        'concepts': sumConceptsWithStrings,
+        'conceptsWithoutStrings': sumConcepts,
+        'terms': terms,
+        'facets': facets,
+        'features': features,
+        'mappings': mappings
+    }
+
+
 def fetch(url, filename):
     """
     Download a file from an URL
@@ -262,6 +395,15 @@ def make():
     s.serialize(open('realfagstermer.ttl', 'w'))
     logger.info('Wrote realfagstermer.ttl')
 
+    now = int(time.time())
+    # now = datetime.datetime.now()
+    s = json.load(open('stats.json', 'r'))
+    current = stats(out)
+    current['ts'] = now
+    s.append(current)
+
+    json.dump(current, open('stats_current.json', 'w'), indent=2, sort_keys=True)
+    json.dump(s, open('stats.json', 'w'), indent=2)
 
     endtime = time.time()
 
