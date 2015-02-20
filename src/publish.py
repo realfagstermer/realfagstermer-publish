@@ -9,6 +9,7 @@ import os
 import time
 import sys
 import json
+import re
 import requests
 from rdflib.graph import Graph, ConjunctiveGraph, Dataset, Literal
 from rdflib.namespace import Namespace, URIRef, OWL, RDF, DC, DCTERMS, FOAF, XSD, SKOS, RDFS
@@ -184,6 +185,14 @@ def fetch(url, filename):
                 break
 
             handle.write(block)
+
+    logger.info(' -> Rewriting URIs')
+    q = re.compile(r'http://data.ub.uio.no/realfagstermer/([0-9]+)')
+    with open(filename, 'r') as infile:
+        with open(filename + '.tmp', 'w') as outfile:
+            outfile.write(q.sub('http://data.ub.uio.no/realfagstermer/c\\1', infile.read()))
+    os.unlink(filename)
+    os.rename(filename + '.tmp', filename)
 
     return True
 
@@ -418,7 +427,7 @@ def make():
 
 def run():
 
-    roald = {
+    roald = {  # 'http://app.uio.no/ub/emnesok/data/test/ureal/rii/eksport/realfagstermer.xml'
         'remote_url': 'http://app.uio.no/ub/emnesok/data/ureal/rii/eksport/realfagstermer.xml',
         'local_file': 'roald.rdf'
     }
