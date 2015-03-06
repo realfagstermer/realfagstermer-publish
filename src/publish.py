@@ -293,11 +293,6 @@ def skosify_process(voc):
     skosify.infer_classes(voc)
     skosify.infer_properties(voc)
 
-    logging.info("Performing inferences")
-
-    skosify.infer_classes(voc)
-    skosify.infer_properties(voc)
-
     # logging.info("Setting up namespaces")
     # skosify.setup_namespaces(voc, namespaces)
 
@@ -309,10 +304,8 @@ def skosify_process(voc):
     # special transforms for collections + aggregate and deprecated concepts
     # skosify.transform_collections(voc)
 
-    # find/create concept scheme
+    # find concept schema and update date modified
     cs = skosify.get_concept_scheme(voc)
-    # if not cs:
-    #     cs = create_concept_scheme(voc, options.namespace)
     skosify.initialize_concept_scheme(voc, cs,
                                       label=False,
                                       language='nb',
@@ -399,9 +392,22 @@ def make():
     out.serialize(open('realfagstermer.nt', 'w'), format='nt')
     logger.info('Wrote realfagstermer.nt')
 
+    SD = Namespace('http://www.w3.org/ns/sparql-service-description#')
+
     s = TurtleSerializer(out)
-    s.topClasses = [SKOS.ConceptScheme, SKOS.Concept]  # These will appear first in the file
-    s.serialize(open('realfagstermer.ttl', 'w'))
+
+    # These will appear first in the file and be ordered by URI
+    s.topClasses = [SKOS.ConceptScheme,
+                    FOAF.Organization,
+                    SD.Service,
+                    SD.Dataset,
+                    SD.Graph,
+                    SD.NamedGraph,
+                    SKOS.Concept]
+
+    fobj = open('realfagstermer.ttl', 'w')
+    fobj.write('@base <http://data.ub.uio.no/> .\n')
+    s.serialize(fobj, base='http://data.ub.uio.no/')
     logger.info('Wrote realfagstermer.ttl')
 
     now = int(time.time())
