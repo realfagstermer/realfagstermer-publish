@@ -144,6 +144,10 @@ cp $BASENAME.nt.zip $DUMPS_DIR/
 cp $BASENAME.rdf.xml.zip $DUMPS_DIR/
 cp $BASENAME.ttl.zip $DUMPS_DIR/
 
+cp $BASENAME.nt $DUMPS_DIR/
+cp $BASENAME.rdf.xml $DUMPS_DIR/
+cp $BASENAME.ttl $DUMPS_DIR/
+
 rm *.bz2 *.zip
 
 #==========================================================
@@ -183,6 +187,6 @@ fi
 
 cp ../stats_current.json _data/
 cp ../stats.json _data/
-git add data/stats_current.json
+git add _data/stats_current.json _data/stats.json
 git commit -m "Update stats"
 git push --mirror origin  # locally updated refs will be force updated on the remote end !
