@@ -217,6 +217,10 @@ def check_modification_dates(record):
     """
 
     head = requests.head(record['remote_url'])
+    if head.status_code != 200:
+        logger.warn('Got status code: %s' % (head.status_code))
+        record['modified'] = False
+        return record
     record['remote_datemod'] = parse(head.headers['last-modified'])
     if os.path.isfile(record['local_file']):
         record['local_datemod'] = datetime.datetime.fromtimestamp(os.path.getmtime(record['local_file']))
