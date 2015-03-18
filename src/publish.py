@@ -11,6 +11,7 @@ import sys
 import json
 import re
 import requests
+from configparser import ConfigParser
 from rdflib.graph import Graph, ConjunctiveGraph, Dataset, Literal
 from rdflib.namespace import Namespace, URIRef, OWL, RDF, DC, DCTERMS, FOAF, XSD, SKOS, RDFS
 from rdflib import BNode
@@ -21,6 +22,7 @@ from skosify import Skosify
 
 import logging
 
+
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('[%(asctime)s %(levelname)s] %(message)s')
@@ -29,6 +31,18 @@ console_handler = logging.StreamHandler(stream=sys.stdout)
 console_handler.setLevel(logging.INFO)
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
+
+config = ConfigParser()
+config.read('{}/config.ini'.format(os.path.dirname(os.path.dirname(__file__))))
+try:
+    if len(config['papertrail']['host']) > 1 and len(config['papertrail']['port']) > 1:
+        papertrail = logging.handlers.SysLogHandler(address=(config['papertrail']['host'], config['papertrail']['port']))
+        f2 = logging.Formatter('%(asctime)s realfagstermer-publish %(levelname)s %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
+        papertrail.setFormatter(f2)
+        papertrail.setLevel(logging.INFO)
+        logger.addHandler(papertrail)
+except:
+    pass
 
 warn_handler = logging.FileHandler('warnings.log')
 warn_handler.setLevel(logging.WARNING)

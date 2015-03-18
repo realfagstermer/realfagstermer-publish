@@ -3,3 +3,7 @@ path=/path/to/isql-vt
 port=1111
 user=
 pass=
+
+[papertrail]
+host=
+port=
