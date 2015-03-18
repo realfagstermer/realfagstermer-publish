@@ -35,8 +35,8 @@ logger.addHandler(console_handler)
 config = ConfigParser()
 config.read('{}/config.ini'.format(os.path.dirname(os.path.dirname(__file__))))
 try:
-    if len(config['papertrail']['host']) > 1 and len(config['papertrail']['port']) > 1:
-        papertrail = logging.handlers.SysLogHandler(address=(config['papertrail']['host'], config['papertrail']['port']))
+    if config['papertrail']['host'] and config['papertrail']['port']:
+        papertrail = logging.handlers.SysLogHandler(address=(config['papertrail']['host'], int(config['papertrail']['port'])))
         f2 = logging.Formatter('%(asctime)s realfagstermer-publish %(levelname)s %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
         papertrail.setFormatter(f2)
         papertrail.setLevel(logging.INFO)
