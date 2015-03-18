@@ -11,7 +11,7 @@ fi
 function install_deps
 {
     echo Installing/updating dependencies
-    pip install -U rdflib pytz python-dateutil requests
+    pip install -U rdflib pytz python-dateutil requests configparser
     pip install git+git://github.com/danmichaelo/skosify.git
     xc=$?
 
