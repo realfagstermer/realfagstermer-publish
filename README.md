@@ -62,5 +62,5 @@ First-time setup:
 ```
 virtualenv ENV
 . ENV/bin/activate
-pip install rdflib requests python-dateutil pytz
+pip install rdflib requests python-dateutil pytz tzlocal
 ```
