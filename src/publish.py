@@ -16,8 +16,7 @@ from configparser import ConfigParser
 from rdflib.graph import Graph, ConjunctiveGraph, Dataset, Literal
 from rdflib.namespace import Namespace, URIRef, OWL, RDF, DC, DCTERMS, FOAF, XSD, SKOS, RDFS
 from rdflib import BNode
-from rdflib.plugins.serializers.turtle import RecursiveSerializer, TurtleSerializer
-
+from otsrdflib import OrderedTurtleSerializer
 from .serializer import OrderedXMLSerializer
 from skosify import Skosify
 
@@ -414,7 +413,7 @@ def make():
 
     SD = Namespace('http://www.w3.org/ns/sparql-service-description#')
 
-    s = TurtleSerializer(out)
+    s = OrderedTurtleSerializer(out)
 
     # These will appear first in the file and be ordered by URI
     s.topClasses = [SKOS.ConceptScheme,
