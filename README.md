@@ -62,5 +62,6 @@ First-time setup:
 ```
 virtualenv ENV
 . ENV/bin/activate
-pip install rdflib requests python-dateutil pytz tzlocal
+pip install -U rdflib requests python-dateutil pytz tzlocal otsrdflib configparser
+pip install -U git+git://github.com/NatLibFi/Skosify.git
 ```
