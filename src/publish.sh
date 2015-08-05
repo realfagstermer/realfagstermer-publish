@@ -104,9 +104,9 @@ if [ $xc != 0 ]; then
 
 fi
 
-cp ../realfagstermer.ttl ./
+cp ../realfagstermer.ttl ./data/
 
-git add realfagstermer.ttl
+git add ./data/realfagstermer.ttl
 git commit -m "Update realfagstermer.ttl"
 git push --mirror origin  # locally updated refs will be force updated on the remote end !
 
