@@ -4,13 +4,22 @@
 # Setup environment 
 #==========================================================
 
+# Output colors
+NORMAL="\\033[0;39m"
+RED="\\033[1;31m"
+BLUE="\\033[1;34m"
+
+log() {
+  printf "$BLUE > $1 $NORMAL\n"
+}
+
 if [ "$(basename "$(pwd)")" == "src" ]; then
     cd ..
 fi
 
 function install_deps
 {
-    echo Installing/updating dependencies
+    log "Installing/updating dependencies"
     pip install -U rdflib pytz python-dateutil requests configparser
     pip install git+git://github.com/danmichaelo/skosify.git
     xc=$?
@@ -61,6 +70,7 @@ fi
 # Produce RDF
 #==========================================================
 
+log "Creating RDF"
 python -m src.publish
 xc=$?
 if [ $xc != 0 ]; then
@@ -72,6 +82,7 @@ fi
 # Commit changes to git repo
 #==========================================================
 
+log "Pushing data to Git"
 if [ ! -d realfagstermer ]; then
 
     git clone git@github-bot:realfagstermer/realfagstermer.git
@@ -104,7 +115,7 @@ if [ $xc != 0 ]; then
 
 fi
 
-cp ../realfagstermer.ttl ./data/
+\cp ../realfagstermer.ttl ./data/
 
 git add ./data/realfagstermer.ttl
 git commit -m "Update realfagstermer.ttl"
@@ -117,6 +128,7 @@ cd ..
 # Update triple store 
 #==========================================================
 
+log "Pushing data to Fuseki"
 python src/update_triple_store.py
 
 
@@ -127,33 +139,35 @@ python src/update_triple_store.py
 BASENAME=realfagstermer
 DUMPS_DIR=/projects/data.ub.uio.no/dumps
 
-echo Preparing dumps
-bzip2 -k $BASENAME.nt
-bzip2 -k $BASENAME.rdf.xml
-bzip2 -k $BASENAME.ttl
+log "Preparing dumps"
+\bzip2 -f -k $BASENAME.nt
+\bzip2 -f -k $BASENAME.rdf.xml
+\bzip2 -f -k $BASENAME.ttl
 
-zip $BASENAME.nt.zip $BASENAME.nt
-zip $BASENAME.rdf.xml.zip $BASENAME.rdf.xml
-zip $BASENAME.ttl.zip $BASENAME.ttl
+\zip $BASENAME.nt.zip $BASENAME.nt
+\zip $BASENAME.rdf.xml.zip $BASENAME.rdf.xml
+\zip $BASENAME.ttl.zip $BASENAME.ttl
 
-cp $BASENAME.nt.bz2 $DUMPS_DIR/
-cp $BASENAME.rdf.xml.bz2 $DUMPS_DIR/
-cp $BASENAME.ttl.bz2 $DUMPS_DIR/
+log "Copying dumps to $DUMPS_DIR"
+\cp $BASENAME.nt.bz2 $DUMPS_DIR/
+\cp $BASENAME.rdf.xml.bz2 $DUMPS_DIR/
+\cp $BASENAME.ttl.bz2 $DUMPS_DIR/
 
-cp $BASENAME.nt.zip $DUMPS_DIR/
-cp $BASENAME.rdf.xml.zip $DUMPS_DIR/
-cp $BASENAME.ttl.zip $DUMPS_DIR/
+\cp $BASENAME.nt.zip $DUMPS_DIR/
+\cp $BASENAME.rdf.xml.zip $DUMPS_DIR/
+\cp $BASENAME.ttl.zip $DUMPS_DIR/
 
-cp $BASENAME.nt $DUMPS_DIR/
-cp $BASENAME.rdf.xml $DUMPS_DIR/
-cp $BASENAME.ttl $DUMPS_DIR/
+\cp $BASENAME.nt $DUMPS_DIR/
+\cp $BASENAME.rdf.xml $DUMPS_DIR/
+\cp $BASENAME.ttl $DUMPS_DIR/
 
-rm *.bz2 *.zip
+\rm *.bz2 *.zip
 
 #==========================================================
 # Publish stats
 #==========================================================
 
+log "Publishing stats"
 
 if [ ! -d realfagstermer.github.io ]; then
 
@@ -185,8 +199,11 @@ if [ $xc != 0 ]; then
 
 fi
 
-cp ../stats_current.json _data/
-cp ../stats.json _data/
+\cp ../stats_current.json _data/
+\cp ../stats.json _data/
 git add _data/stats_current.json _data/stats.json
 git commit -m "Update stats"
 git push --mirror origin  # locally updated refs will be force updated on the remote end !
+
+log "Done"
+
