@@ -224,11 +224,11 @@ def check_modification_dates(record):
         return record
     record['remote_datemod'] = parse(head.headers['last-modified'])
     if os.path.isfile(record['local_file']):
-        record['local_datemod'] = tz.localize(datetime.datetime.fromtimestamp(os.path.getmtime(record['local_file'])))
+        record['local_datemod'] = datetime.datetime.fromtimestamp(os.path.getmtime(record['local_file']))
     else:
         # use some date in the past
         record['local_datemod'] = datetime.datetime(year=2014, month=1, day=1)
-    record['local_datemod'] = record['local_datemod'].replace(tzinfo=pytz.utc)
+    record['local_datemod'] = tz.normalize(tz.localize(record['local_datemod'])).astimezone(pytz.utc)
 
     logger.info('   Remote file modified: %s' % (record['remote_datemod'].isoformat()))
     logger.info('    Local file modified: %s' % (record['local_datemod'].isoformat()))
